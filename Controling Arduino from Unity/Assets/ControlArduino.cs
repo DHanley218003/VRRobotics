@@ -53,7 +53,7 @@ public class ControlArduino : MonoBehaviour
                 servoDegre1 = servoDegre1 - 1;
             }
         }
-        servo1.localRotation = Quaternion.AngleAxis(-servoDegre1, Vector3.back);
+        servo1.localRotation = Quaternion.AngleAxis(servoDegre1, Vector3.back);
         A = servoDegre1.ToString("000");
         if (servoDegre2 != (sliderServo2.value))
         {
@@ -67,7 +67,7 @@ public class ControlArduino : MonoBehaviour
                 servoDegre2 = servoDegre2 - 1;
             }
         }
-        servo2.localRotation = Quaternion.AngleAxis(-servoDegre2, Vector3.up);
+        servo2.localRotation = Quaternion.AngleAxis(servoDegre2, Vector3.up);
         B = servoDegre2.ToString("000");
         if (servoDegre3 != (sliderServo3.value))
         {
@@ -81,7 +81,7 @@ public class ControlArduino : MonoBehaviour
                 servoDegre3 = servoDegre3 - 1;
             }
         }
-        servo3.localRotation = Quaternion.AngleAxis(-servoDegre3, Vector3.up);
+        servo3.localRotation = Quaternion.AngleAxis(servoDegre3, Vector3.up);
         C = servoDegre3.ToString("000");
         if (servoDegre4 != (sliderServo4.value))
         {
@@ -95,7 +95,7 @@ public class ControlArduino : MonoBehaviour
                 servoDegre4 = servoDegre4 - 1;
             }
         }
-        servo4.localRotation = Quaternion.AngleAxis(-servoDegre4, Vector3.up);
+        servo4.localRotation = Quaternion.AngleAxis(servoDegre4, Vector3.up);
         D = servoDegre4.ToString("000");
 
         myString = string.Concat(A, B, C, D);
