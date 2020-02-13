@@ -4,15 +4,20 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using UnityEditor;
 using UnityEngine;
+using Valve.VR;
 
 public class IKManager : MonoBehaviour
 {
+    public SteamVR_Behaviour_Pose m_Pose = null;
+    public SteamVR_Action_Boolean m_TouchPadLeft = null;
+    public SteamVR_Action_Boolean m_TouchPadRight = null;
     public RobotJoint[] Joints;
+    public int childObject = 0;
     public float SamplingDistance;
     public float DistanceThreshold;
     public float LearningRate;
     public Vector3 target;
-    public Target targetObject;
+    public GameObject targetObject;
     public float[] angles;
     SerialPort serial;
     public string myString;
@@ -25,6 +30,8 @@ public class IKManager : MonoBehaviour
     {
         if(robotIsConnected)
             OpenSerialPort();
+        m_TouchPadLeft.AddOnStateUpListener(PrevIKTarget, m_Pose.inputSource);
+        m_TouchPadRight.AddOnStateUpListener(NextIKTarget, m_Pose.inputSource);
     }
 
     private void FixedUpdate()
@@ -41,8 +48,26 @@ public class IKManager : MonoBehaviour
 
     private void Update()
     {
-        target = targetObject.getTargetPosition();
+        target = targetObject.transform.position;
         InverseKinematics(target, angles);
+    }
+
+    public void PrevIKTarget(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        if (targetObject.transform.parent != null)
+        {
+            targetObject = targetObject.transform.parent.gameObject;
+            childObject--;
+        }
+    }
+
+    public void NextIKTarget(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        if (targetObject.transform.childCount > 0)
+        {
+            targetObject = targetObject.transform.GetChild(0).gameObject;
+            childObject++;
+        }
     }
 
     private void OpenSerialPort()

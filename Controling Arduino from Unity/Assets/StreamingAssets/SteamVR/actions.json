@@ -50,6 +50,22 @@
       "type": "boolean"
     },
     {
+      "name": "/actions/default/in/TouchPadUp",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/TouchPadLeft",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/TouchPadRight",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/TouchPadDown",
+      "type": "boolean"
+    },
+    {
       "name": "/actions/default/out/Haptic",
       "type": "vibration"
     },
