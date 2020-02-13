@@ -31,7 +31,7 @@ public class TEST_RVM1 : MonoBehaviour
     void Start()
     {
         serial = new SerialPort();
-        serial.PortName = "COM3";
+        serial.PortName = "COM4";
         serial.Parity = Parity.None;
         serial.BaudRate = 9600;
         serial.DataBits = 8;

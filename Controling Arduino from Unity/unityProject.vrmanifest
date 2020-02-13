@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.controlingarduinofromunity.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "C:\\Users\\a0021\\Desktop\\vrrobotics-clementlb\\Controling Arduino from Unity\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "Controling Arduino from Unity [Testing]"
+        }
+      }
+    }
+  ]
+}
