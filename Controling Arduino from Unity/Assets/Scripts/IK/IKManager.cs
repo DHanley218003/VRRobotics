@@ -28,13 +28,14 @@ public class IKManager : MonoBehaviour
     public string portName = "COM4";
     public System.Net.IPAddress host = IPAddress.Parse("192.168.1.8");
     public int port = 30004;
+    private bool IKFinished = false;
     public bool robotIsServo = false;
     public bool robotIsConnected = false;
-    private Byte[] buffer = new Byte[256];
+    public Byte[] buffer = new Byte[256];
 
     private void Start()
     {
-        InvokeRepeating("SendData", 0.0f, 0.8f);
+        //InvokeRepeating("SendData", 0.0f, 0.7f);
     }
     private void Awake()
     {
@@ -67,6 +68,8 @@ public class IKManager : MonoBehaviour
         {
             MoveRobotArm();
         }
+
+        SendData();
     }
 
     private void Update()
@@ -98,25 +101,38 @@ public class IKManager : MonoBehaviour
 
     private void OpenTCPPort()
     {
-        TCPPort = new Socket(AddressFamily.InterNetwork,
-            SocketType.Stream,
-            ProtocolType.Tcp);
+        try
+        {
+            TCPPort = new Socket(AddressFamily.InterNetwork,
+                SocketType.Stream,
+                ProtocolType.Tcp);
+            TCPPort.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.NoDelay, 1);
+            TCPPort.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
 
-        TCPPort.Connect(host, port);
+            TCPPort.Connect(host, port);
+        }
+        catch(Exception e)
+        { }
     }
     private void OpenSerialPort()
     {
-        serial = new SerialPort
+        try
         {
-            PortName = portName,
-            Parity = Parity.None,
-            BaudRate = 2000000,
-            DataBits = 8,
-            StopBits = StopBits.One,
-            ReadTimeout = 20,
-            WriteTimeout = 20 // Used to counter lag.
-        };
-        serial.Open();
+            serial = new SerialPort
+            {
+                PortName = portName,
+                Parity = Parity.None,
+                BaudRate = 2000000,
+                DataBits = 8,
+                StopBits = StopBits.One,
+                ReadTimeout = 20,
+                WriteTimeout = 20 // Used to counter lag.
+            };
+            serial.Open();
+        }
+        catch (Exception e)
+        { }
+
     }
 
     private void SendData()
@@ -125,7 +141,7 @@ public class IKManager : MonoBehaviour
         {
             serial.Write(myString + "\n");
         }
-        else
+        else if(IKFinished)
         {
             TCPPort.Send(Encoding.ASCII.GetBytes(myString + "\n"));
             TCPPort.Receive(buffer);
@@ -176,8 +192,11 @@ public class IKManager : MonoBehaviour
     private void InverseKinematics(Vector3 target, float[] angles)
     {
         if (DistanceFromTarget(target, angles) < DistanceThreshold)
+        {
+            IKFinished = true;
             return;
-
+        }
+        IKFinished = false;
         for (int i = Joints.Length -1; i >= 0; i--)
         {
             // Gradient descent

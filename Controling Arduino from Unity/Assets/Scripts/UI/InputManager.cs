@@ -20,21 +20,23 @@ public class InputManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        
+        touch.onChange -= Touch;
+        press.onStateUp -= PressRelease;
+        touchPosition.onAxis -= Position;
     }
 
     private void Position(SteamVR_Action_Vector2 fromAction, SteamVR_Input_Sources fromSource, Vector2 axis, Vector2 delta)
     {
-
+        radialMenu.SetTouchPosition(axis);
     }
 
     private void Touch(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource, bool newState)
     {
-
+        radialMenu.Show(newState);
     }
 
     private void PressRelease(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-
+        radialMenu.ActivateHighlightedSection();
     }
 }
