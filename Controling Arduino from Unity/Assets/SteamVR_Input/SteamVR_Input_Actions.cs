@@ -43,6 +43,12 @@ namespace Valve.VR
         
         private static SteamVR_Action_Boolean p_robotArmControl_Teleport;
         
+        private static SteamVR_Action_Boolean p_robotArmControl_ActivateMenu;
+        
+        private static SteamVR_Action_Boolean p_robotArmControl_Select;
+        
+        private static SteamVR_Action_Vector2 p_robotArmControl_MenuSelectionPosition;
+        
         private static SteamVR_Action_Vibration p_robotArmControl_Haptic;
         
         public static SteamVR_Action_Boolean robotArmControl_InteractUI
@@ -149,6 +155,30 @@ namespace Valve.VR
             }
         }
         
+        public static SteamVR_Action_Boolean robotArmControl_ActivateMenu
+        {
+            get
+            {
+                return SteamVR_Actions.p_robotArmControl_ActivateMenu.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
+        public static SteamVR_Action_Boolean robotArmControl_Select
+        {
+            get
+            {
+                return SteamVR_Actions.p_robotArmControl_Select.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
+        public static SteamVR_Action_Vector2 robotArmControl_MenuSelectionPosition
+        {
+            get
+            {
+                return SteamVR_Actions.p_robotArmControl_MenuSelectionPosition.GetCopy<SteamVR_Action_Vector2>();
+            }
+        }
+        
         public static SteamVR_Action_Vibration robotArmControl_Haptic
         {
             get
@@ -173,6 +203,9 @@ namespace Valve.VR
                     SteamVR_Actions.robotArmControl_HeadSetOnHead,
                     SteamVR_Actions.robotArmControl_GrabGrip,
                     SteamVR_Actions.robotArmControl_Teleport,
+                    SteamVR_Actions.robotArmControl_ActivateMenu,
+                    SteamVR_Actions.robotArmControl_Select,
+                    SteamVR_Actions.robotArmControl_MenuSelectionPosition,
                     SteamVR_Actions.robotArmControl_Haptic};
             Valve.VR.SteamVR_Input.actionsIn = new Valve.VR.ISteamVR_Action_In[] {
                     SteamVR_Actions.robotArmControl_InteractUI,
@@ -187,7 +220,10 @@ namespace Valve.VR
                     SteamVR_Actions.robotArmControl_Squeeze,
                     SteamVR_Actions.robotArmControl_HeadSetOnHead,
                     SteamVR_Actions.robotArmControl_GrabGrip,
-                    SteamVR_Actions.robotArmControl_Teleport};
+                    SteamVR_Actions.robotArmControl_Teleport,
+                    SteamVR_Actions.robotArmControl_ActivateMenu,
+                    SteamVR_Actions.robotArmControl_Select,
+                    SteamVR_Actions.robotArmControl_MenuSelectionPosition};
             Valve.VR.SteamVR_Input.actionsOut = new Valve.VR.ISteamVR_Action_Out[] {
                     SteamVR_Actions.robotArmControl_Haptic};
             Valve.VR.SteamVR_Input.actionsVibration = new Valve.VR.SteamVR_Action_Vibration[] {
@@ -203,10 +239,13 @@ namespace Valve.VR
                     SteamVR_Actions.robotArmControl_TouchPadLeft,
                     SteamVR_Actions.robotArmControl_HeadSetOnHead,
                     SteamVR_Actions.robotArmControl_GrabGrip,
-                    SteamVR_Actions.robotArmControl_Teleport};
+                    SteamVR_Actions.robotArmControl_Teleport,
+                    SteamVR_Actions.robotArmControl_ActivateMenu,
+                    SteamVR_Actions.robotArmControl_Select};
             Valve.VR.SteamVR_Input.actionsSingle = new Valve.VR.SteamVR_Action_Single[] {
                     SteamVR_Actions.robotArmControl_Squeeze};
-            Valve.VR.SteamVR_Input.actionsVector2 = new Valve.VR.SteamVR_Action_Vector2[0];
+            Valve.VR.SteamVR_Input.actionsVector2 = new Valve.VR.SteamVR_Action_Vector2[] {
+                    SteamVR_Actions.robotArmControl_MenuSelectionPosition};
             Valve.VR.SteamVR_Input.actionsVector3 = new Valve.VR.SteamVR_Action_Vector3[0];
             Valve.VR.SteamVR_Input.actionsSkeleton = new Valve.VR.SteamVR_Action_Skeleton[] {
                     SteamVR_Actions.robotArmControl_SkeletonLeftHand,
@@ -221,7 +260,10 @@ namespace Valve.VR
                     SteamVR_Actions.robotArmControl_Squeeze,
                     SteamVR_Actions.robotArmControl_HeadSetOnHead,
                     SteamVR_Actions.robotArmControl_GrabGrip,
-                    SteamVR_Actions.robotArmControl_Teleport};
+                    SteamVR_Actions.robotArmControl_Teleport,
+                    SteamVR_Actions.robotArmControl_ActivateMenu,
+                    SteamVR_Actions.robotArmControl_Select,
+                    SteamVR_Actions.robotArmControl_MenuSelectionPosition};
         }
         
         private static void PreInitActions()
@@ -239,6 +281,9 @@ namespace Valve.VR
             SteamVR_Actions.p_robotArmControl_HeadSetOnHead = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/RobotArmControl/in/HeadSetOnHead")));
             SteamVR_Actions.p_robotArmControl_GrabGrip = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/RobotArmControl/in/GrabGrip")));
             SteamVR_Actions.p_robotArmControl_Teleport = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/RobotArmControl/in/Teleport")));
+            SteamVR_Actions.p_robotArmControl_ActivateMenu = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/RobotArmControl/in/ActivateMenu")));
+            SteamVR_Actions.p_robotArmControl_Select = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/RobotArmControl/in/Select")));
+            SteamVR_Actions.p_robotArmControl_MenuSelectionPosition = ((SteamVR_Action_Vector2)(SteamVR_Action.Create<SteamVR_Action_Vector2>("/actions/RobotArmControl/in/MenuSelectionPosition")));
             SteamVR_Actions.p_robotArmControl_Haptic = ((SteamVR_Action_Vibration)(SteamVR_Action.Create<SteamVR_Action_Vibration>("/actions/RobotArmControl/out/Haptic")));
         }
     }

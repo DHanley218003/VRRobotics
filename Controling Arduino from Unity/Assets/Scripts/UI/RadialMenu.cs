@@ -5,9 +5,11 @@ using UnityEngine;
 
 public class RadialMenu : MonoBehaviour
 {
+    [Header("Scene")]
     public Transform selectionTransform = null;
     public Transform cursorTransform = null;
 
+    [Header("Events")]
     public RadialSection top = null;
     public RadialSection right = null;
     public RadialSection bottom = null;
@@ -16,9 +18,7 @@ public class RadialMenu : MonoBehaviour
     private Vector2 touchPosition = Vector2.zero;
     private List<RadialSection> radialSections = null;
     private RadialSection highlightedSection = null;
-
-    private static int sections = 4;
-    private readonly float degreeIncrement = 360.0f / sections;
+    private readonly float degreeIncrement = 90.0f;
 
     private void Awake()
     {

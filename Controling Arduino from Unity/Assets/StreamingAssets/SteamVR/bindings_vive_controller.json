@@ -1,183 +1,204 @@
 {
-  "app_key": "application.generated.unity.controlingarduinofromunity.exe",
-  "bindings": {
-    "/actions/buggy": {
-      "chords": [],
-      "poses": [],
-      "haptics": [],
-      "sources": [],
-      "skeleton": []
-    },
-    "/actions/default": {
-      "chords": [],
-      "poses": [],
-      "haptics": [],
-      "sources": [],
-      "skeleton": []
-    },
-    "/actions/platformer": {
-      "chords": [],
-      "poses": [],
-      "haptics": [],
-      "sources": [],
-      "skeleton": []
-    },
-    "/actions/robotarmcontrol": {
-      "chords": [],
-      "poses": [
-        {
-          "output": "/actions/robotarmcontrol/in/pose",
-          "path": "/user/hand/left/pose/raw"
-        },
-        {
-          "output": "/actions/robotarmcontrol/in/pose",
-          "path": "/user/hand/right/pose/raw"
-        }
-      ],
-      "haptics": [
-        {
-          "output": "/actions/robotarmcontrol/out/haptic",
-          "path": "/user/hand/left/output/haptic"
-        },
-        {
-          "output": "/actions/robotarmcontrol/out/haptic",
-          "path": "/user/hand/right/output/haptic"
-        }
-      ],
-      "sources": [
-        {
-          "path": "/user/hand/left/input/grip",
-          "mode": "button",
-          "parameters": {},
-          "inputs": {
-            "click": {
-              "output": "/actions/robotarmcontrol/in/grabgrip"
-            }
-          }
-        },
-        {
-          "path": "/user/hand/right/input/grip",
-          "mode": "button",
-          "parameters": {},
-          "inputs": {
-            "click": {
-              "output": "/actions/robotarmcontrol/in/grabgrip"
-            }
-          }
-        },
-        {
-          "path": "/user/hand/left/input/trigger",
-          "mode": "button",
-          "parameters": {},
-          "inputs": {
-            "click": {
-              "output": "/actions/robotarmcontrol/in/interactui"
-            }
-          }
-        },
-        {
-          "path": "/user/hand/right/input/trigger",
-          "mode": "button",
-          "parameters": {},
-          "inputs": {
-            "click": {
-              "output": "/actions/robotarmcontrol/in/interactui"
-            }
-          }
-        },
-        {
-          "path": "/user/hand/left/input/trigger",
-          "mode": "button",
-          "parameters": {},
-          "inputs": {
-            "click": {
-              "output": "/actions/robotarmcontrol/in/grabpinch"
-            }
-          }
-        },
-        {
-          "path": "/user/hand/right/input/trigger",
-          "mode": "button",
-          "parameters": {},
-          "inputs": {
-            "click": {
-              "output": "/actions/robotarmcontrol/in/grabpinch"
-            }
-          }
-        },
-        {
-          "path": "/user/hand/left/input/trigger",
-          "mode": "trigger",
-          "parameters": {},
-          "inputs": {
-            "pull": {
-              "output": "/actions/robotarmcontrol/in/squeeze"
-            }
-          }
-        },
-        {
-          "path": "/user/hand/right/input/trigger",
-          "mode": "trigger",
-          "parameters": {},
-          "inputs": {
-            "pull": {
-              "output": "/actions/robotarmcontrol/in/squeeze"
-            }
-          }
-        },
-        {
-          "path": "/user/hand/left/input/trackpad",
-          "mode": "dpad",
-          "parameters": {
-            "sub_mode": "click"
-          },
-          "inputs": {
-            "center": {
-              "output": "/actions/robotarmcontrol/in/teleport"
+   "action_manifest_version" : 0,
+   "alias_info" : {},
+   "app_key" : "application.generated.unity.controlingarduinofromunity.exe",
+   "bindings" : {
+      "/actions/buggy" : {
+         "chords" : [],
+         "haptics" : [],
+         "poses" : [],
+         "skeleton" : [],
+         "sources" : []
+      },
+      "/actions/default" : {
+         "chords" : [],
+         "haptics" : [],
+         "poses" : [],
+         "skeleton" : [],
+         "sources" : []
+      },
+      "/actions/platformer" : {
+         "chords" : [],
+         "haptics" : [],
+         "poses" : [],
+         "skeleton" : [],
+         "sources" : []
+      },
+      "/actions/robotarmcontrol" : {
+         "chords" : [],
+         "haptics" : [
+            {
+               "output" : "/actions/robotarmcontrol/out/haptic",
+               "path" : "/user/hand/left/output/haptic"
             },
-            "east": {
-              "output": "/actions/robotarmcontrol/in/touchpadright"
-            },
-            "north": {
-              "output": "/actions/robotarmcontrol/in/touchpadup"
-            },
-            "south": {
-              "output": "/actions/robotarmcontrol/in/touchpaddown"
-            },
-            "west": {
-              "output": "/actions/robotarmcontrol/in/touchpadleft"
+            {
+               "output" : "/actions/robotarmcontrol/out/haptic",
+               "path" : "/user/hand/right/output/haptic"
             }
-          }
-        },
-        {
-          "path": "/user/hand/right/input/trackpad",
-          "mode": "dpad",
-          "parameters": {
-            "sub_mode": "click"
-          },
-          "inputs": {
-            "center": {
-              "output": "/actions/robotarmcontrol/in/teleport"
+         ],
+         "poses" : [
+            {
+               "output" : "/actions/robotarmcontrol/in/pose",
+               "path" : "/user/hand/left/pose/raw"
             },
-            "east": {
-              "output": "/actions/robotarmcontrol/in/touchpadright"
-            },
-            "north": {
-              "output": "/actions/robotarmcontrol/in/touchpadup"
-            },
-            "south": {
-              "output": "/actions/robotarmcontrol/in/touchpaddown"
-            },
-            "west": {
-              "output": "/actions/robotarmcontrol/in/touchpadleft"
+            {
+               "output" : "/actions/robotarmcontrol/in/pose",
+               "path" : "/user/hand/right/pose/raw"
             }
-          }
-        }
-      ],
-      "skeleton": []
-    }
-  },
-  "controller_type": "vive_controller",
-  "description": "",
-  "name": "My Controling Arduino from Unity [Testing] configuration for Vive Controller"
+         ],
+         "skeleton" : [
+            {
+               "output" : "/actions/robotarmcontrol/in/skeletonlefthand",
+               "path" : "/user/hand/left/input/skeleton/left"
+            },
+            {
+               "output" : "/actions/robotarmcontrol/in/skeletonrighthand",
+               "path" : "/user/hand/right/input/skeleton/right"
+            }
+         ],
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/robotarmcontrol/in/grabgrip"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/grip"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/robotarmcontrol/in/grabgrip"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/grip"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/robotarmcontrol/in/interactui"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/robotarmcontrol/in/interactui"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/robotarmcontrol/in/grabpinch"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/robotarmcontrol/in/grabpinch"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "pull" : {
+                     "output" : "/actions/robotarmcontrol/in/squeeze"
+                  }
+               },
+               "mode" : "trigger",
+               "path" : "/user/hand/left/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "pull" : {
+                     "output" : "/actions/robotarmcontrol/in/squeeze"
+                  }
+               },
+               "mode" : "trigger",
+               "path" : "/user/hand/right/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "center" : {
+                     "output" : "/actions/robotarmcontrol/in/teleport"
+                  },
+                  "east" : {
+                     "output" : "/actions/robotarmcontrol/in/touchpadright"
+                  },
+                  "north" : {
+                     "output" : "/actions/robotarmcontrol/in/touchpadup"
+                  },
+                  "south" : {
+                     "output" : "/actions/robotarmcontrol/in/touchpaddown"
+                  },
+                  "west" : {
+                     "output" : "/actions/robotarmcontrol/in/touchpadleft"
+                  }
+               },
+               "mode" : "dpad",
+               "parameters" : {
+                  "sub_mode" : "click"
+               },
+               "path" : "/user/hand/left/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "center" : {
+                     "output" : "/actions/robotarmcontrol/in/teleport"
+                  },
+                  "east" : {
+                     "output" : "/actions/robotarmcontrol/in/touchpadright"
+                  },
+                  "north" : {
+                     "output" : "/actions/robotarmcontrol/in/touchpadup"
+                  },
+                  "south" : {
+                     "output" : "/actions/robotarmcontrol/in/touchpaddown"
+                  },
+                  "west" : {
+                     "output" : "/actions/robotarmcontrol/in/touchpadleft"
+                  }
+               },
+               "mode" : "dpad",
+               "parameters" : {
+                  "sub_mode" : "click"
+               },
+               "path" : "/user/hand/right/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/robotarmcontrol/in/select"
+                  },
+                  "position" : {
+                     "output" : "/actions/robotarmcontrol/in/menuselectionposition"
+                  },
+                  "touch" : {
+                     "output" : "/actions/robotarmcontrol/in/activatemenu"
+                  }
+               },
+               "mode" : "trackpad",
+               "path" : "/user/hand/left/input/trackpad"
+            }
+         ]
+      }
+   },
+   "category" : "steamvr_input",
+   "controller_type" : "vive_controller",
+   "description" : "",
+   "name" : "My Controling Arduino from Unity [Testing] configuration for Vive Controller",
+   "options" : {},
+   "simulated_actions" : []
 }

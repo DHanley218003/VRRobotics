@@ -57,6 +57,21 @@
       "type": "boolean"
     },
     {
+      "name": "/actions/RobotArmControl/in/ActivateMenu",
+      "type": "boolean",
+      "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/RobotArmControl/in/Select",
+      "type": "boolean",
+      "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/RobotArmControl/in/MenuSelectionPosition",
+      "type": "vector2",
+      "requirement": "mandatory"
+    },
+    {
       "name": "/actions/RobotArmControl/out/Haptic",
       "type": "vibration"
     }

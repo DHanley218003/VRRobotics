@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Valve.VR;
+using System.Data;
+using UnityEngine.Events;
+using System.Net.Sockets;
+using System.Net;
+using System.Text;
+using System;
 
 public class Hand : MonoBehaviour
 {
@@ -10,14 +16,27 @@ public class Hand : MonoBehaviour
 	public SteamVR_Action_Vibration hapticAction = null;
 	public SteamVR_Action_Boolean m_TouchPadUp = null;
 	public SteamVR_Action_Boolean m_TouchPadDown = null;
+	public SteamVR_Action_Boolean m_TouchPadLeft = null;
+	public SteamVR_Action_Boolean m_TouchPadRight = null;
 	private SteamVR_Behaviour_Pose m_Pose = null;
 	private FixedJoint m_Joint = null;
 	public GameObject IKTarget;
 	public GameObject IKTargetPrefab;
+	public GameObject VR_Controller;
 	private Interactable m_Currentinteractable = null;
 	public List<Interactable> m_Contactinteractables = new List<Interactable>();
 	public GameObject robotArm = null;
 	public List<GameObject> gameObjects = new List<GameObject>();
+	public bool movingForward = true;
+	public bool robotIsConnected = false;
+	public int childObject = 0;
+	public System.Net.IPAddress hostIP = IPAddress.Parse("192.168.1.9");
+	public int port = 30003;
+	public Socket TCPPort = null;
+	public string commandString = null;
+	public int scaler = 1; // Scales the co-ordinates, in this case changes meters to mm.
+	public float acceleration = 1.2f;
+	public float velocity = 0.25f;
 
 	void Awake()
 	{
@@ -25,17 +44,37 @@ public class Hand : MonoBehaviour
 		m_Joint = GetComponent<FixedJoint>();
 		m_GrabAction.AddOnStateDownListener(Pickup, m_Pose.inputSource);
 		m_GrabAction.AddOnStateUpListener(Drop, m_Pose.inputSource);
-		m_TouchPadUp.AddOnStateUpListener(SpawnIKTarget, m_Pose.inputSource);
-		m_TouchPadDown.AddOnStateUpListener(DeleteIKTarget, m_Pose.inputSource);
+		m_TouchPadUp.AddOnStateUpListener(DPadUp, m_Pose.inputSource);
+		m_TouchPadDown.AddOnStateUpListener(DPadDown, m_Pose.inputSource);
+		m_TouchPadLeft.AddOnStateUpListener(DPadLeft, m_Pose.inputSource);
+		m_TouchPadRight.AddOnStateUpListener(DPadRight, m_Pose.inputSource);
 		gameObjects.Add(IKTarget);
+		if(robotIsConnected)
+		{
+			try
+			{
+				TCPPort = new Socket(AddressFamily.InterNetwork,
+					SocketType.Stream,
+					ProtocolType.Tcp);
+				TCPPort.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.NoDelay, 1);
+				TCPPort.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+								TCPPort.Connect(hostIP, port);
+			}
+			catch (Exception e)
+			{ }
+		}
 	}
 
 	private void OnDestroy()
 	{
 		m_GrabAction.RemoveOnStateDownListener(Pickup, m_Pose.inputSource);
 		m_GrabAction.RemoveOnStateUpListener(Drop, m_Pose.inputSource);
-		m_TouchPadUp.RemoveOnStateUpListener(SpawnIKTarget, m_Pose.inputSource);
-		m_TouchPadDown.RemoveOnStateUpListener(DeleteIKTarget, m_Pose.inputSource);
+		m_TouchPadUp.RemoveOnStateUpListener(DPadUp, m_Pose.inputSource);
+		m_TouchPadDown.RemoveOnStateUpListener(DPadDown, m_Pose.inputSource);
+		m_TouchPadLeft.RemoveOnStateUpListener(DPadLeft, m_Pose.inputSource);
+		m_TouchPadRight.RemoveOnStateUpListener(DPadRight, m_Pose.inputSource);
+		if (robotIsConnected)
+			TCPPort.Close();
 	}
 
 	private void OnTriggerEnter(Collider other)
@@ -60,11 +99,135 @@ public class Hand : MonoBehaviour
 		hapticAction.Execute(0, duration, frequency, amplitude, source);
 	}
 
+	public void DPadUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+	{
+		if (fromSource == SteamVR_Input_Sources.RightHand)
+		{
+			SpawnIKTarget(fromAction, fromSource);
+		}
+		else
+		{
+			JogMove();
+		}
+	}
+
+	public void DPadDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+	{
+		if (fromSource == SteamVR_Input_Sources.RightHand)
+		{
+			DeleteIKTarget(fromAction, fromSource);
+		}
+		else
+		{
+			ParabolaMove();
+		}
+	}
+
+	public void DPadLeft(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+	{
+		if (fromSource == SteamVR_Input_Sources.RightHand)
+		{
+			LastPoint();
+		}
+		else
+		{
+			ChangeDirection();
+		}
+	}
+
+	public void DPadRight(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+	{
+		if (fromSource == SteamVR_Input_Sources.RightHand)
+		{
+			NextPoint();
+		}
+		else
+		{
+			LinearMove();
+		}
+	}
+
+	public void JogMove()
+	{
+		// clear the string
+		commandString = "movej(p[";
+		RobotMove();
+	}
+
+	public void LinearMove()
+	{
+		// clear the string
+		commandString = "movel(p[";
+		RobotMove();
+	}
+
+	public void ParabolaMove()
+	{
+		// clear the string
+		commandString = "movep(p[";
+		RobotMove();
+	}
+
+	public void RobotMove()
+	{
+		if (movingForward)
+		{
+			if(NextPoint())
+			{
+				commandString += IKTarget.transform.position.x * scaler + ", " + IKTarget.transform.position.z * scaler + ", " + IKTarget.transform.position.y * scaler + ", "
+				+ ConvertDegreesToRadians(IKTarget.transform.rotation.x) + ", " + ConvertDegreesToRadians(IKTarget.transform.rotation.y) + ", " + ConvertDegreesToRadians(IKTarget.transform.rotation.z);
+				commandString += "], a=" + acceleration + ", v=" + velocity + ")";
+			}
+			if (robotIsConnected)
+				TCPPort.Send(Encoding.ASCII.GetBytes(commandString + "\n"));
+		}
+		else
+		{
+			if(LastPoint())
+			{
+				commandString += IKTarget.transform.position.x * scaler + ", " + IKTarget.transform.position.z * scaler + ", " + IKTarget.transform.position.y * scaler + ", "
+				+ ConvertDegreesToRadians(IKTarget.transform.rotation.x) + ", " + ConvertDegreesToRadians(IKTarget.transform.rotation.y) + ", " + ConvertDegreesToRadians(IKTarget.transform.rotation.z);
+				commandString += "], a=" + acceleration + ", v=" + velocity + ")";
+			}
+			if (robotIsConnected)
+				TCPPort.Send(Encoding.ASCII.GetBytes(commandString + "\n"));
+		}
+		
+	}
+
+	public void ChangeDirection()
+	{
+		movingForward = !movingForward;
+	}
+
+	public bool NextPoint()
+	{
+		if (IKTarget.transform.childCount > 0)
+		{
+			IKTarget = IKTarget.transform.GetChild(0).gameObject;
+			childObject++;
+			return true;
+		}
+		else
+			return false;
+	}
+
+	public bool LastPoint()
+	{
+		if (IKTarget.transform.parent != null)
+		{
+			IKTarget = IKTarget.transform.parent.gameObject;
+			childObject--;
+			return true;
+		}
+		else
+			return false;
+	}
 	public void SpawnIKTarget(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
 	{
 		gameObjects.Add(Instantiate(IKTargetPrefab as GameObject));
 		gameObjects[gameObjects.Count - 1].transform.parent = gameObjects[gameObjects.Count - 2].transform;
-		gameObjects[gameObjects.Count - 1].transform.position = gameObjects[gameObjects.Count - 2].transform.position + new Vector3(0.1f,0.1f,0.1f);
+		gameObjects[gameObjects.Count - 1].transform.position = VR_Controller.transform.position;
 	}
 
 	public void DeleteIKTarget(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
@@ -122,5 +285,14 @@ public class Hand : MonoBehaviour
 		}
 		return nearest;
 	}
-
+	public static double ConvertDegreesToRadians(double degrees)
+	{
+		double radians = (Math.PI / 180) * degrees;
+		return (radians);
+	}
+	public static double ConvertRadiansToDegrees(double radians)
+	{
+		double degrees = radians * 180 / Math.PI;
+		return (degrees);
+	}
 }

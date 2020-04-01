@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Ports;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Web;
 using UnityEditor;
 using UnityEngine;
+using UniversalRobotsConnect;
+using UniversalRobotsConnect.Types;
 using Valve.VR;
 
 public class IKManager : MonoBehaviour
@@ -22,16 +26,21 @@ public class IKManager : MonoBehaviour
     public Vector3 target;
     public GameObject targetObject;
     public float[] angles;
+    public double[] radianAngles;
     SerialPort serial;
     Socket TCPPort;
     public string myString;
     public string portName = "COM4";
-    public System.Net.IPAddress host = IPAddress.Parse("192.168.1.8");
-    public int port = 30004;
+    public System.Net.IPAddress host = IPAddress.Parse("192.168.1.9");
+    public int port = 30002;
     private bool IKFinished = false;
     public bool robotIsServo = false;
     public bool robotIsConnected = false;
-    public Byte[] buffer = new Byte[256];
+    public Byte[] buffer = new Byte[1518];
+    public string temp;
+    public RobotConnector ur5eConnection;
+    public RobotModel ur5eModel;
+    public double[] robotJoints;
 
     private void Start()
     {
@@ -39,6 +48,7 @@ public class IKManager : MonoBehaviour
     }
     private void Awake()
     {
+        ur5eModel = new RobotModel();
         if (robotIsConnected)
             if (robotIsServo)
                 OpenSerialPort();
@@ -46,6 +56,7 @@ public class IKManager : MonoBehaviour
                 OpenTCPPort();
         m_TouchPadLeft.AddOnStateUpListener(PrevIKTarget, m_Pose.inputSource);
         m_TouchPadRight.AddOnStateUpListener(NextIKTarget, m_Pose.inputSource);
+        radianAngles = new double[6];
     }
     private void OnDestroy()
     {
@@ -69,15 +80,35 @@ public class IKManager : MonoBehaviour
             MoveRobotArm();
         }
 
-        SendData();
+        if (robotIsConnected)
+        {
+            //SendData();
+        }
+        UpdateRobotAngles();
     }
 
     private void Update()
     {
-        target = targetObject.transform.position;
+       /* target = targetObject.transform.position;
         for (int i = 0; i < 1000; i++)
         {
             InverseKinematics(target, angles);
+        }*/
+        
+
+    }
+
+    private void UpdateRobotAngles()
+    {
+        robotJoints = ur5eConnection.RobotModel.ActualQ;
+        for (int i = 0; i < robotJoints.Length; i++)
+        {
+            angles[i] = (float) ConvertRadiansToDegrees(robotJoints[i]);
+        }
+        for (int i = 0; i < Joints.Length; i++)
+        {
+            // The angles are muiltiplied with the axis variable, so only the moving axis actually moves. The other angles are set to 0 as a result.
+            Joints[i].transform.localEulerAngles = new Vector3(angles[i] * Joints[i].Axis.x, angles[i] * Joints[i].Axis.y, angles[i] * Joints[i].Axis.z);
         }
     }
 
@@ -113,6 +144,7 @@ public class IKManager : MonoBehaviour
         }
         catch(Exception e)
         { }
+        ur5eConnection = new RobotConnector(ur5eModel, host.ToString(), true);
     }
     private void OpenSerialPort()
     {
@@ -141,10 +173,11 @@ public class IKManager : MonoBehaviour
         {
             serial.Write(myString + "\n");
         }
-        else if(IKFinished)
+        else
         {
-            TCPPort.Send(Encoding.ASCII.GetBytes(myString + "\n"));
-            TCPPort.Receive(buffer);
+            //TCPPort.Send(Encoding.ASCII.GetBytes(myString + "\n"));
+            //TCPPort.Receive(buffer);
+            ur5eConnection.RTDE.SendData(myString);
         }
     }
 
@@ -191,41 +224,41 @@ public class IKManager : MonoBehaviour
 
     private void InverseKinematics(Vector3 target, float[] angles)
     {
-        if (DistanceFromTarget(target, angles) < DistanceThreshold)
-        {
-            IKFinished = true;
-            return;
-        }
+        
         IKFinished = false;
-        for (int i = Joints.Length -1; i >= 0; i--)
+        for (int i = Joints.Length - 1; i >= 0; i--)
         {
             // Gradient descent
             float gradient = PartialGradient(target, angles, i);
             angles[i] -= LearningRate * gradient;
 
             // Clamp angles to account for servo limits
-            // angles[i] = Mathf.Clamp(angles[i], Joints[i].MinAngle, Joints[i].MaxAngle);
+            if (robotIsServo)
+            {
+                angles[i] = Mathf.Clamp(angles[i], Joints[i].MinAngle, Joints[i].MaxAngle);
+            }
 
             // Early termination
             if (DistanceFromTarget(target, angles) < DistanceThreshold)
+            {
+                IKFinished = true;
                 return;
+            }
         }
     }
 
     private void MoveRobotArm()
     {
-        // clear the string
-        myString = "movej([";
+        myString = "def myProg():\nspeedl([";
         for (int i = 0; i < Joints.Length; i++)
         {
-            if (i > 0)
+            if (i != 0)
                 myString += ", ";
             // The angles are muiltiplied with the axis variable, so only the moving axis actually moves. The other angles are set to 0 as a result.
             Joints[i].transform.localEulerAngles = new Vector3(angles[i] * Joints[i].Axis.x, angles[i] * Joints[i].Axis.y, angles[i] * Joints[i].Axis.z);
             myString += ConvertDegreesToRadians(angles[i]);
         }
-        myString += "])";
-        //"movej([-0.5405182705025187, -2.350330184112267, -1.316631037266588, -2.2775736604458237, 3.3528323423665642, -1.2291967454894914], a = 1.3962634015954636, v = 1.0471975511965976)"
+        myString += "],1.0,1.0)\nend\n";
     }
 
     private void MoveServoArm()
@@ -245,5 +278,10 @@ public class IKManager : MonoBehaviour
     {
         double radians = (Math.PI / 180) * degrees;
         return (radians);
+    }
+    public static double ConvertRadiansToDegrees(double radians)
+    {
+        double degrees = radians * 180/Math.PI;
+        return (degrees);
     }
 }

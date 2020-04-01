@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class RadialSection : MonoBehaviour
+[Serializable]
+public class RadialSection
 {
     public Sprite icon = null;
     public SpriteRenderer iconRenderer = null;

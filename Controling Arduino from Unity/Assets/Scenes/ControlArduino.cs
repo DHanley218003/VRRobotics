@@ -27,8 +27,8 @@ public class ControlArduino : MonoBehaviour
     public string myString;
     public float comRapidity = 1.0f;
     public string portName;
-    float temps = 0.0f;
-    float delay = 0.0f;
+    /*float temps = 0.0f;
+    float delay = 0.0f;*/
     bool setPort = true;
 
     public int servoDegre1; //Degré value
