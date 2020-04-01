@@ -39,16 +39,14 @@ public class IKManager : MonoBehaviour
     public Byte[] buffer = new Byte[1518];
     public string temp;
     public RobotConnector ur5eConnection;
-    public RobotModel ur5eModel;
     public double[] robotJoints;
 
     private void Start()
     {
-        //InvokeRepeating("SendData", 0.0f, 0.7f);
+        //InvokeRepeating("UpdateRobotAngles", 0.0f, 1.0f);
     }
     private void Awake()
     {
-        ur5eModel = new RobotModel();
         if (robotIsConnected)
             if (robotIsServo)
                 OpenSerialPort();
@@ -84,18 +82,18 @@ public class IKManager : MonoBehaviour
         {
             //SendData();
         }
-        UpdateRobotAngles();
+        
     }
 
     private void Update()
     {
-       /* target = targetObject.transform.position;
-        for (int i = 0; i < 1000; i++)
-        {
-            InverseKinematics(target, angles);
-        }*/
-        
+        /* target = targetObject.transform.position;
+         for (int i = 0; i < 1000; i++)
+         {
+             InverseKinematics(target, angles);
+         }*/
 
+        UpdateRobotAngles();
     }
 
     private void UpdateRobotAngles()
@@ -103,7 +101,10 @@ public class IKManager : MonoBehaviour
         robotJoints = ur5eConnection.RobotModel.ActualQ;
         for (int i = 0; i < robotJoints.Length; i++)
         {
-            angles[i] = (float) ConvertRadiansToDegrees(robotJoints[i]);
+            if(i == 0)
+                angles[i] = -(float)ConvertRadiansToDegrees(robotJoints[i]);
+            else
+                angles[i] = (float) ConvertRadiansToDegrees(robotJoints[i]);
         }
         for (int i = 0; i < Joints.Length; i++)
         {
@@ -144,7 +145,7 @@ public class IKManager : MonoBehaviour
         }
         catch(Exception e)
         { }
-        ur5eConnection = new RobotConnector(ur5eModel, host.ToString(), true);
+        ur5eConnection = new RobotConnector(host.ToString(), true);
     }
     private void OpenSerialPort()
     {

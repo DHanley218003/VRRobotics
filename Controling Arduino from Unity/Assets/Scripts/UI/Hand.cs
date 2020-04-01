@@ -38,6 +38,11 @@ public class Hand : MonoBehaviour
 	public float acceleration = 1.2f;
 	public float velocity = 0.25f;
 
+	private void Update()
+	{
+		DrawLine();
+	}
+
 	void Awake()
 	{
 		m_Pose = GetComponent<SteamVR_Behaviour_Pose>();
@@ -168,29 +173,44 @@ public class Hand : MonoBehaviour
 		RobotMove();
 	}
 
+	public void DrawLine()
+	{
+		if (movingForward)
+			if (IKTarget.transform.childCount > 0)
+				Debug.DrawRay(IKTarget.transform.position, IKTarget.transform.GetChild(0).gameObject.transform.position, Color.green);
+		else if (IKTarget.transform.parent != null)
+				Debug.DrawRay(IKTarget.transform.position, IKTarget.transform.parent.gameObject.transform.position, Color.green);
+
+	}
+
 	public void RobotMove()
 	{
 		if (movingForward)
 		{
-			if(NextPoint())
+			if (NextPoint())
 			{
 				commandString += IKTarget.transform.position.x * scaler + ", " + IKTarget.transform.position.z * scaler + ", " + IKTarget.transform.position.y * scaler + ", "
 				+ ConvertDegreesToRadians(IKTarget.transform.rotation.x) + ", " + ConvertDegreesToRadians(IKTarget.transform.rotation.y) + ", " + ConvertDegreesToRadians(IKTarget.transform.rotation.z);
 				commandString += "], a=" + acceleration + ", v=" + velocity + ")";
+				if (robotIsConnected)
+					TCPPort.Send(Encoding.ASCII.GetBytes(commandString + "\n"));
 			}
-			if (robotIsConnected)
-				TCPPort.Send(Encoding.ASCII.GetBytes(commandString + "\n"));
+			else
+				ChangeDirection();
+			
 		}
 		else
 		{
-			if(LastPoint())
+			if (LastPoint())
 			{
 				commandString += IKTarget.transform.position.x * scaler + ", " + IKTarget.transform.position.z * scaler + ", " + IKTarget.transform.position.y * scaler + ", "
 				+ ConvertDegreesToRadians(IKTarget.transform.rotation.x) + ", " + ConvertDegreesToRadians(IKTarget.transform.rotation.y) + ", " + ConvertDegreesToRadians(IKTarget.transform.rotation.z);
 				commandString += "], a=" + acceleration + ", v=" + velocity + ")";
+				if (robotIsConnected)
+					TCPPort.Send(Encoding.ASCII.GetBytes(commandString + "\n"));
 			}
-			if (robotIsConnected)
-				TCPPort.Send(Encoding.ASCII.GetBytes(commandString + "\n"));
+			else
+				ChangeDirection();
 		}
 		
 	}

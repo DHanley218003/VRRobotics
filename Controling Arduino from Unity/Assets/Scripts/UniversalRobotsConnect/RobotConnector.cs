@@ -60,7 +60,7 @@ namespace UniversalRobotsConnect
             //    Thread.Sleep(10);
             //}
             //log.Debug("Clear to send");
-            Thread.Sleep(5000);
+            Thread.Sleep(50);
             Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   WE HAVE STARTED ROBOT    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
 
