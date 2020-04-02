@@ -52,14 +52,14 @@ public class IKManager : MonoBehaviour
                 OpenSerialPort();
             else
                 OpenTCPPort();
-        m_TouchPadLeft.AddOnStateUpListener(PrevIKTarget, m_Pose.inputSource);
-        m_TouchPadRight.AddOnStateUpListener(NextIKTarget, m_Pose.inputSource);
+       // m_TouchPadLeft.AddOnStateUpListener(PrevIKTarget, m_Pose.inputSource);
+       // m_TouchPadRight.AddOnStateUpListener(NextIKTarget, m_Pose.inputSource);
         radianAngles = new double[6];
     }
     private void OnDestroy()
     {
-        m_TouchPadLeft.RemoveOnStateUpListener(PrevIKTarget, m_Pose.inputSource);
-        m_TouchPadRight.RemoveOnStateUpListener(NextIKTarget, m_Pose.inputSource);
+       // m_TouchPadLeft.RemoveOnStateUpListener(PrevIKTarget, m_Pose.inputSource);
+       // m_TouchPadRight.RemoveOnStateUpListener(NextIKTarget, m_Pose.inputSource);
         if (robotIsConnected)
             if (robotIsServo)
                 serial.Close();
@@ -98,7 +98,8 @@ public class IKManager : MonoBehaviour
 
     private void UpdateRobotAngles()
     {
-        robotJoints = ur5eConnection.RobotModel.ActualQ;
+        if(robotIsConnected)
+            robotJoints = ur5eConnection.RobotModel.ActualQ;
         for (int i = 0; i < robotJoints.Length; i++)
         {
             if(i == 0)

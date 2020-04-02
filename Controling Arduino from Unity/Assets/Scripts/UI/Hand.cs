@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System;
+using UnityEngine.UI;
 
 public class Hand : MonoBehaviour
 {
@@ -34,9 +35,13 @@ public class Hand : MonoBehaviour
 	public int port = 30003;
 	public Socket TCPPort = null;
 	public string commandString = null;
-	public int scaler = 1; // Scales the co-ordinates, in this case changes meters to mm.
+	public static float scaler = 0.25f; // Scales the co-ordinates, in this case changes meters to mm.
+	public Vector3 vrScale = new Vector3(scaler, scaler, scaler);
 	public float acceleration = 1.2f;
 	public float velocity = 0.25f;
+	public Material deselected;
+	public Material selected;
+	public GameObject cameraRig;
 
 	private void Update()
 	{
@@ -68,6 +73,7 @@ public class Hand : MonoBehaviour
 			catch (Exception e)
 			{ }
 		}
+		IKTarget.GetComponent<MeshRenderer>().material = selected;
 	}
 
 	private void OnDestroy()
@@ -132,7 +138,7 @@ public class Hand : MonoBehaviour
 	{
 		if (fromSource == SteamVR_Input_Sources.RightHand)
 		{
-			LastPoint();
+			DecreaseScale();
 		}
 		else
 		{
@@ -144,7 +150,7 @@ public class Hand : MonoBehaviour
 	{
 		if (fromSource == SteamVR_Input_Sources.RightHand)
 		{
-			NextPoint();
+			IncreaseScale();
 		}
 		else
 		{
@@ -176,10 +182,16 @@ public class Hand : MonoBehaviour
 	public void DrawLine()
 	{
 		if (movingForward)
+		{
 			if (IKTarget.transform.childCount > 0)
-				Debug.DrawRay(IKTarget.transform.position, IKTarget.transform.GetChild(0).gameObject.transform.position, Color.green);
+			{
+				Debug.DrawLine(IKTarget.transform.position, IKTarget.transform.GetChild(0).gameObject.transform.position, Color.green, 0.001f);
+			}
+		}
 		else if (IKTarget.transform.parent != null)
-				Debug.DrawRay(IKTarget.transform.position, IKTarget.transform.parent.gameObject.transform.position, Color.green);
+		{
+			Debug.DrawLine(IKTarget.transform.position, IKTarget.transform.parent.gameObject.transform.position, Color.green, 0.001f);
+		}
 
 	}
 
@@ -189,7 +201,7 @@ public class Hand : MonoBehaviour
 		{
 			if (NextPoint())
 			{
-				commandString += IKTarget.transform.position.x * scaler + ", " + IKTarget.transform.position.z * scaler + ", " + IKTarget.transform.position.y * scaler + ", "
+				commandString += IKTarget.transform.position.x + ", " + IKTarget.transform.position.z + ", " + IKTarget.transform.position.y + ", "
 				+ ConvertDegreesToRadians(IKTarget.transform.rotation.x) + ", " + ConvertDegreesToRadians(IKTarget.transform.rotation.y) + ", " + ConvertDegreesToRadians(IKTarget.transform.rotation.z);
 				commandString += "], a=" + acceleration + ", v=" + velocity + ")";
 				if (robotIsConnected)
@@ -203,7 +215,7 @@ public class Hand : MonoBehaviour
 		{
 			if (LastPoint())
 			{
-				commandString += IKTarget.transform.position.x * scaler + ", " + IKTarget.transform.position.z * scaler + ", " + IKTarget.transform.position.y * scaler + ", "
+				commandString += IKTarget.transform.position.x + ", " + IKTarget.transform.position.z + ", " + IKTarget.transform.position.y + ", "
 				+ ConvertDegreesToRadians(IKTarget.transform.rotation.x) + ", " + ConvertDegreesToRadians(IKTarget.transform.rotation.y) + ", " + ConvertDegreesToRadians(IKTarget.transform.rotation.z);
 				commandString += "], a=" + acceleration + ", v=" + velocity + ")";
 				if (robotIsConnected)
@@ -215,6 +227,16 @@ public class Hand : MonoBehaviour
 		
 	}
 
+	public void DecreaseScale()
+	{
+		cameraRig.transform.localScale += vrScale;
+	}
+
+	public void IncreaseScale()
+	{
+		cameraRig.transform.localScale -= vrScale;
+	}
+
 	public void ChangeDirection()
 	{
 		movingForward = !movingForward;
@@ -224,7 +246,9 @@ public class Hand : MonoBehaviour
 	{
 		if (IKTarget.transform.childCount > 0)
 		{
+			IKTarget.GetComponent<MeshRenderer>().material = deselected;
 			IKTarget = IKTarget.transform.GetChild(0).gameObject;
+			IKTarget.GetComponent<MeshRenderer>().material = selected;
 			childObject++;
 			return true;
 		}
@@ -236,7 +260,9 @@ public class Hand : MonoBehaviour
 	{
 		if (IKTarget.transform.parent != null)
 		{
+			IKTarget.GetComponent<MeshRenderer>().material = deselected;
 			IKTarget = IKTarget.transform.parent.gameObject;
+			IKTarget.GetComponent<MeshRenderer>().material = selected;
 			childObject--;
 			return true;
 		}
